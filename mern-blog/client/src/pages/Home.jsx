@@ -3,8 +3,8 @@ import API from "../services/api";
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
-
   const [editingId, setEditingId] = useState(null);
+
   const [editForm, setEditForm] = useState({
     title: "",
     author: "",
@@ -30,38 +30,6 @@ function Home() {
     }
   };
 
-  const deleteBlog = async (id) => {
-    try {
-      await API.delete(`/blogs/${id}`);
-      fetchBlogs();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const editBlog = (blog) => {
-    setEditingId(blog._id);
-    setEditForm({
-      title: blog.title,
-      author: blog.author,
-      content: blog.content,
-    });
-  };
-
-  const updateBlog = async () => {
-    try {
-      await API.put(`/blogs/${editingId}`, editForm);
-
-      alert("Blog Updated!");
-
-      setEditingId(null);
-
-      fetchBlogs();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const createBlog = async () => {
     try {
       await API.post("/blogs", newBlog);
@@ -80,59 +48,105 @@ function Home() {
     }
   };
 
+  const deleteBlog = async (id) => {
+    try {
+      await API.delete(`/blogs/${id}`);
+      fetchBlogs();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const editBlog = (blog) => {
+    setEditingId(blog._id);
+
+    setEditForm({
+      title: blog.title,
+      author: blog.author,
+      content: blog.content,
+    });
+  };
+
+  const updateBlog = async () => {
+    try {
+      await API.put(`/blogs/${editingId}`, editForm);
+
+      alert("Blog Updated!");
+
+      setEditingId(null);
+      fetchBlogs();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div className="p-8">
+    <div className="min-h-screen bg-purple-700 p-8">
+      <div className="bg-purple-900 text-white rounded-xl shadow-lg p-6 mb-8">
+        <h1 className="text-4xl font-bold text-center">
+          BlogSphere
+        </h1>
 
-      <h1 className="text-4xl font-bold mb-6">
-        MERN Blog Website
-      </h1>
+        <p className="text-center mt-2 text-purple-200">
+          Share your thoughts with the world
+        </p>
+      </div>
 
-      <div className="border p-4 rounded mb-6">
-        <h2 className="text-2xl font-bold mb-3">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h2 className="text-2xl font-bold mb-4">
           Create Blog
         </h2>
 
         <input
           type="text"
-          placeholder="Title"
+          placeholder="Blog Title"
           value={newBlog.title}
           onChange={(e) =>
-            setNewBlog({ ...newBlog, title: e.target.value })
+            setNewBlog({
+              ...newBlog,
+              title: e.target.value,
+            })
           }
-          className="border p-2 w-full mb-2"
+          className="border p-3 w-full mb-3 rounded"
         />
 
         <input
           type="text"
-          placeholder="Author"
+          placeholder="Author Name"
           value={newBlog.author}
           onChange={(e) =>
-            setNewBlog({ ...newBlog, author: e.target.value })
+            setNewBlog({
+              ...newBlog,
+              author: e.target.value,
+            })
           }
-          className="border p-2 w-full mb-2"
+          className="border p-3 w-full mb-3 rounded"
         />
 
         <textarea
-          placeholder="Content"
+          placeholder="Write your blog..."
           value={newBlog.content}
           onChange={(e) =>
-            setNewBlog({ ...newBlog, content: e.target.value })
+            setNewBlog({
+              ...newBlog,
+              content: e.target.value,
+            })
           }
-          className="border p-2 w-full mb-2"
-          rows="4"
+          className="border p-3 w-full mb-3 rounded"
+          rows="5"
         />
 
         <button
           onClick={createBlog}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-purple-700 text-white px-5 py-2 rounded hover:bg-purple-800"
         >
           Create Blog
         </button>
       </div>
 
       {editingId && (
-        <div className="border p-4 rounded mb-6">
-          <h2 className="text-2xl font-bold mb-3">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-4">
             Edit Blog
           </h2>
 
@@ -145,7 +159,7 @@ function Home() {
                 title: e.target.value,
               })
             }
-            className="border p-2 w-full mb-2"
+            className="border p-3 w-full mb-3 rounded"
           />
 
           <input
@@ -157,7 +171,7 @@ function Home() {
                 author: e.target.value,
               })
             }
-            className="border p-2 w-full mb-2"
+            className="border p-3 w-full mb-3 rounded"
           />
 
           <textarea
@@ -168,54 +182,57 @@ function Home() {
                 content: e.target.value,
               })
             }
-            className="border p-2 w-full mb-2"
-            rows="4"
+            className="border p-3 w-full mb-3 rounded"
+            rows="5"
           />
 
           <button
             onClick={updateBlog}
-            className="bg-green-600 text-white px-4 py-2 rounded"
+            className="bg-green-600 text-white px-5 py-2 rounded"
           >
             Save Changes
           </button>
         </div>
       )}
 
+      <h2 className="text-3xl font-bold text-white mb-4">
+        Latest Blogs
+      </h2>
+
       {blogs.map((blog) => (
         <div
           key={blog._id}
-          className="border rounded-lg p-4 mb-4 shadow"
+          className="bg-white rounded-xl shadow-lg p-6 mb-5"
         >
+          <div className="mb-4">
+            <button
+              onClick={() => editBlog(blog)}
+              className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
+            >
+              Edit
+            </button>
 
-          <button
-            onClick={() => deleteBlog(blog._id)}
-            className="bg-red-600 text-white px-4 py-2 rounded mb-2"
-          >
-            DELETE BLOG
-          </button>
+            <button
+              onClick={() => deleteBlog(blog._id)}
+              className="bg-red-600 text-white px-4 py-2 rounded"
+            >
+              Delete
+            </button>
+          </div>
 
-          <button
-            onClick={() => editBlog(blog)}
-            className="bg-yellow-500 text-white px-4 py-2 rounded mb-2 ml-2"
-          >
-            EDIT BLOG
-          </button>
-
-          <h2 className="text-2xl font-semibold">
+          <h3 className="text-2xl font-bold">
             {blog.title}
-          </h2>
+          </h3>
 
-          <p className="text-gray-600">
+          <p className="text-gray-500">
             By {blog.author}
           </p>
 
-          <p className="mt-2">
+          <p className="mt-3">
             {blog.content}
           </p>
-
         </div>
       ))}
-
     </div>
   );
 }
